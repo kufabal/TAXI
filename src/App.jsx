@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-import { MapPin, User, Lock, CheckCircle, XCircle, Loader2, Navigation } from 'lucide-react';
+import { MapPin, User, Lock, CheckCircle, XCircle, Loader2, Navigation, Search } from 'lucide-react';
+import MapComponent from './components/MapComponent';
 
 
 
@@ -13,6 +14,28 @@ export default function App() {
   const [userInfo, setUserInfo] = useState({ role: '', revealIdentity: false });
 
   const [destination, setDestination] = useState('');
+  const [showMap, setShowMap] = useState(false);
+
+  // 주소 검색 함수
+  const handleAddressSearch = () => {
+    if (!destination.trim()) return;
+    
+    // OpenStreetMap Nominatim API 사용 (무료)
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&limit=1`)
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setShowMap(true);
+          // 주소가 검색되면 지도에 표시됨
+        } else {
+          alert('주소를 찾을 수 없습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('주소 검색 실패:', error);
+        alert('주소 검색 중 오류가 발생했습니다.');
+      });
+  };
 
 
 
@@ -287,21 +310,71 @@ export default function App() {
 
                 <p className="text-xs text-gray-500 mb-1">도착장소</p>
 
-                <input 
+                <div className="flex gap-2">
 
-                  type="text" 
+                  <input 
 
-                  placeholder="주소 검색 또는 지도 터치" 
+                    type="text" 
 
-                  className="w-full font-bold text-gray-800 p-2 border-b border-gray-300 focus:border-ewha outline-none"
+                    placeholder="주소 검색 또는 지도 터치" 
 
-                  onChange={(e) => setDestination(e.target.value)}
+                    value={destination}
+
+                    className="flex-1 font-bold text-gray-800 p-2 border-b border-gray-300 focus:border-ewha outline-none"
+
+                    onChange={(e) => setDestination(e.target.value)}
+
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddressSearch();
+                      }
+                    }}
+
+                  />
+
+                  <button
+
+                    onClick={() => setShowMap(!showMap)}
+
+                    className="px-4 py-2 bg-ewha text-white rounded-lg text-sm font-bold hover:bg-green-900 transition"
+
+                  >
+
+                    {showMap ? '지도 닫기' : '지도 열기'}
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+
+            {/* 지도 표시 */}
+
+            {showMap && (
+
+              <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-200">
+
+                <MapComponent 
+
+                  onLocationSelect={(addr, coords) => {
+
+                    setDestination(addr);
+
+                    setShowMap(false);
+
+                  }}
+
+                  selectedAddress={destination}
 
                 />
 
               </div>
 
-            </div>
+            )}
 
 
 
