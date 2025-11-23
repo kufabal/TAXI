@@ -14,7 +14,7 @@ export default function App() {
   const [userInfo, setUserInfo] = useState({ role: '', revealIdentity: false });
 
   const [destination, setDestination] = useState('');
-  const [showMap, setShowMap] = useState(false);
+  const [showMap, setShowMap] = useState(true); // 기본적으로 지도 표시
 
   // 주소 검색 함수
   const handleAddressSearch = () => {
@@ -247,28 +247,30 @@ export default function App() {
       <div className="flex flex-col h-screen bg-gray-50">
 
         {/* 상단 GPS 헤더 */}
-
         <div className="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-10">
-
           <div className="flex items-center text-ewha font-bold">
-
             <Navigation className="w-5 h-5 mr-2 fill-current" />
-
             <span>현위치: 서대문구 이화여대길</span>
-
           </div>
-
           <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-
             <User className="w-5 h-5 text-gray-600" />
-
           </div>
-
         </div>
 
+        {/* 지도 영역 - 화면 중앙에 크게 표시 */}
+        <div className="flex-1 p-4" style={{ height: 'calc(100vh - 200px)', minHeight: '300px' }}>
+          <div className="w-full h-full rounded-lg overflow-hidden border-2 border-ewha shadow-lg" style={{ width: '100%', height: '100%' }}>
+            <MapComponent 
+              onLocationSelect={(addr, coords) => {
+                setDestination(addr);
+              }}
+              selectedAddress={destination}
+            />
+          </div>
+        </div>
 
-
-        <div className="flex-1 p-6 flex flex-col justify-end pb-10">
+        {/* 출발지/도착지 입력 폼 - 하단 고정 */}
+        <div className="bg-white p-6 pt-4 pb-6 border-t border-gray-200">
 
           <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
 
@@ -349,32 +351,6 @@ export default function App() {
               </div>
 
             </div>
-
-
-
-            {/* 지도 표시 */}
-
-            {showMap && (
-
-              <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-200">
-
-                <MapComponent 
-
-                  onLocationSelect={(addr, coords) => {
-
-                    setDestination(addr);
-
-                    setShowMap(false);
-
-                  }}
-
-                  selectedAddress={destination}
-
-                />
-
-              </div>
-
-            )}
 
 
 
