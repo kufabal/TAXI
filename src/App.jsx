@@ -38,12 +38,13 @@ export default function App() {
 
           <div className="mb-10 text-center">
 
-            {/* 이화여자대학교 로고 대체 텍스트 / 이미지 */}
-
-            <div className="mx-auto w-24 h-24 bg-ewha rounded-full flex items-center justify-center mb-4">
-
-              <span className="text-white text-3xl font-bold">EWHA</span>
-
+            {/* 이화여자대학교 로고 */}
+            <div className="mx-auto w-24 h-24 mb-4 flex items-center justify-center">
+              <img 
+                src="/logo.png" 
+                alt="이화여자대학교 로고" 
+                className="w-full h-full object-contain"
+              />
             </div>
 
             <h1 className="text-3xl font-bold text-ewha">EWAY SHARE</h1>
