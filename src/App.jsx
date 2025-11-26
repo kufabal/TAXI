@@ -20,21 +20,20 @@ export default function App() {
   const handleAddressSearch = () => {
     if (!destination.trim()) return;
     
-    // OpenStreetMap Nominatim API 사용 (무료)
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&limit=1`)
-      .then(response => response.json())
-      .then(data => {
-        if (data && data.length > 0) {
-          setShowMap(true);
-          // 주소가 검색되면 지도에 표시됨
+    // Google Maps Geocoding API 사용
+    if (window.google && window.google.maps) {
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode({ address: destination }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          // 주소 검색 성공 - MapComponent가 자동으로 처리
+          console.log('주소 검색 성공:', results[0].formatted_address);
         } else {
           alert('주소를 찾을 수 없습니다.');
         }
-      })
-      .catch(error => {
-        console.error('주소 검색 실패:', error);
-        alert('주소 검색 중 오류가 발생했습니다.');
       });
+    } else {
+      alert('지도가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
 
@@ -98,7 +97,10 @@ export default function App() {
 
             <button 
 
-              onClick={goHome}
+              onClick={() => {
+                console.log('로그인 버튼 클릭, 홈 화면으로 이동');
+                goHome();
+              }}
 
               className="w-full bg-ewha text-white p-4 rounded-lg font-bold text-lg hover:bg-green-900 transition"
 
@@ -241,10 +243,11 @@ export default function App() {
   // 3. 택시 부르기 (메인) 화면
 
   if (screen === 'home') {
+    console.log('홈 화면 렌더링 중...', 'screen:', screen);
 
     return (
 
-      <div className="flex flex-col h-screen bg-gray-50">
+      <div className="flex flex-col h-screen bg-gray-50 overflow-auto">
 
         {/* 상단 GPS 헤더 */}
         <div className="bg-white p-4 shadow-sm flex items-center justify-between sticky top-0 z-10">
@@ -257,9 +260,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* 지도 영역 - 화면 중앙에 크게 표시 */}
-        <div className="flex-1 p-4" style={{ height: 'calc(100vh - 200px)', minHeight: '300px' }}>
-          <div className="w-full h-full rounded-lg overflow-hidden border-2 border-ewha shadow-lg" style={{ width: '100%', height: '100%' }}>
+        {/* 지도 영역 - 헤더 바로 아래 */}
+        <div style={{ width: '100%', height: '500px', padding: '20px', backgroundColor: '#f0f0f0' }}>
+          <div style={{ width: '100%', height: '460px', backgroundColor: 'white', border: '3px solid #006633', borderRadius: '10px', position: 'relative' }}>
             <MapComponent 
               onLocationSelect={(addr, coords) => {
                 setDestination(addr);
